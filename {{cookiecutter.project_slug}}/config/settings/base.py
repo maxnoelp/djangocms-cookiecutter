@@ -28,7 +28,11 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # In Windows, this must be set to your system time zone.
 TIME_ZONE = "{{ cookiecutter.timezone }}"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
+{% if cookiecutter.use_djangocms == "y" %}
+LANGUAGE_CODE = "en"
+{%- else %}
 LANGUAGE_CODE = "en-us"
+{%- endif %}
 # https://docs.djangoproject.com/en/dev/ref/settings/#languages
 # from django.utils.translation import gettext_lazy as _
 # LANGUAGES = [
@@ -60,7 +64,11 @@ DATABASES = {
 {%- endif %}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
+{% if cookiecutter.use_djangocms == "y" %}
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+{%- else %}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+{%- endif %}
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -79,9 +87,51 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
+{% if cookiecutter.use_djangocms == "y" %}
+    "djangocms_admin_style",
+{%- endif %}
     "django.contrib.admin",
     "django.forms",
 ]
+{% if cookiecutter.use_djangocms == "y" %}
+CMS_APPS = [
+    "cms",
+    "menus",
+    "treebeard",
+    "sekizai",
+    # the default publishing implementation - optional, but used in most projects
+    "djangocms_versioning",
+    # the default alias content - optional, but used in most projects
+    "djangocms_alias",
+    "parler",
+    # the next-gen text editor - optional, but used in most projects
+    "djangocms_text",
+    # link support
+    "djangocms_link",
+    # CMS Frontend
+    "djangocms_frontend",
+    "djangocms_frontend.contrib.accordion",
+    "djangocms_frontend.contrib.alert",
+    "djangocms_frontend.contrib.badge",
+    "djangocms_frontend.contrib.card",
+    "djangocms_frontend.contrib.carousel",
+    "djangocms_frontend.contrib.collapse",
+    "djangocms_frontend.contrib.content",
+    "djangocms_frontend.contrib.grid",
+    "djangocms_frontend.contrib.jumbotron",
+    "djangocms_frontend.contrib.link",
+    "djangocms_frontend.contrib.listgroup",
+    "djangocms_frontend.contrib.media",
+    "djangocms_frontend.contrib.icon",
+    "djangocms_frontend.contrib.image",
+    "djangocms_frontend.contrib.tabs",
+    "djangocms_frontend.contrib.utilities",
+
+]
+
+CMS_CONFIRM_VERSION4 = True
+DJANGOCMS_VERSIONING_ALLOW_DELETING_VERSIONS = True
+{%- endif %}
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
@@ -89,6 +139,11 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+{%- if cookiecutter.use_djangoFiler == 'y' %}
+     # Django Filer - optional, but used in most projects
+    'filer',
+    'easy_thumbnails',
+{%- endif %}
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -109,6 +164,9 @@ LOCAL_APPS = [
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+{% if cookiecutter.use_djangocms == "y" %}
+INSTALLED_APPS += CMS_APPS
+{%- endif %}
 
 # MIGRATIONS
 # ------------------------------------------------------------------------------
@@ -168,6 +226,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # CMS Middleware
+{% if cookiecutter.use_djangocms == "y" %}
+    "cms.middleware.user.CurrentUserMiddleware",
+    "cms.middleware.page.CurrentPageMiddleware",
+    "cms.middleware.toolbar.ToolbarMiddleware",
+    "cms.middleware.language.LanguageCookieMiddleware",
+{%- endif %}
 ]
 
 # STATIC
@@ -214,11 +279,30 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "{{cookiecutter.project_slug}}.users.context_processors.allauth_settings",
+{% if cookiecutter.use_djangocms == "y" %}
+                "cms.context_processors.cms_settings",
+                "sekizai.context_processors.sekizai",
+{%- endif %}
             ],
         },
     },
 ]
 
+{% if cookiecutter.use_djangocms == "y" %}
+CMS_TEMPLATES = [
+    ("cms_base.html", "CMS Base Template"),
+]
+{%- endif %}
+
+{% if cookiecutter.use_djangoFiler == "y" %}
+THUMBNAIL_PROCESSORS = (
+    "easy_thumbnails.processors.colorspace",
+    "easy_thumbnails.processors.autocrop",
+    # "easy_thumbnails.processors.scale_and_crop",
+    "filer.thumbnail_processors.scale_and_crop_with_subject_location",
+    "easy_thumbnails.processors.filters",
+)
+{%- endif %}
 # https://docs.djangoproject.com/en/dev/ref/settings/#form-renderer
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
@@ -238,7 +322,11 @@ SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
 CSRF_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
+{% if cookiecutter.use_djangocms == "y" %}
+X_FRAME_OPTIONS = "SAMEORIGIN"
+{%- else %}
 X_FRAME_OPTIONS = "DENY"
+{%- endif %}
 
 # EMAIL
 # ------------------------------------------------------------------------------

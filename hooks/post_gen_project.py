@@ -78,7 +78,10 @@ def remove_utility_files():
 def remove_heroku_files():
     file_names = ["Procfile", "requirements.txt"]
     for file_name in file_names:
-        if file_name == "requirements.txt" and "{{ cookiecutter.ci_tool }}".lower() == "travis":
+        if (
+            file_name == "requirements.txt"
+            and "{{ cookiecutter.ci_tool }}".lower() == "travis"
+        ):
             # don't remove the file if we are using travisci but not using heroku
             continue
         Path(file_name).unlink()
@@ -101,7 +104,9 @@ def remove_webpack_files():
 
 
 def remove_vendors_js():
-    vendors_js_path = Path("{{ cookiecutter.project_slug }}", "static", "js", "vendors.js")
+    vendors_js_path = Path(
+        "{{ cookiecutter.project_slug }}", "static", "js", "vendors.js"
+    )
     if vendors_js_path.exists():
         vendors_js_path.unlink()
 
@@ -172,7 +177,9 @@ def handle_js_runner(choice, use_docker, use_async):
         ]
         if not use_docker:
             dev_django_cmd = (
-                "uvicorn config.asgi:application --reload" if use_async else "python manage.py runserver_plus"
+                "uvicorn config.asgi:application --reload"
+                if use_async
+                else "python manage.py runserver_plus"
             )
             scripts.update(
                 {
@@ -239,7 +246,9 @@ def remove_dotdrone_file():
     Path(".drone.yml").unlink()
 
 
-def generate_random_string(length, using_digits=False, using_ascii_letters=False, using_punctuation=False):
+def generate_random_string(
+    length, using_digits=False, using_ascii_letters=False, using_punctuation=False
+):
     """
     Example:
         opting out for 50 symbol-long, [a-z][A-Z][0-9] string
@@ -333,7 +342,9 @@ def set_postgres_password(file_path, value=None):
 
 
 def set_celery_flower_user(file_path, value):
-    celery_flower_user = set_flag(file_path, "!!!SET CELERY_FLOWER_USER!!!", value=value)
+    celery_flower_user = set_flag(
+        file_path, "!!!SET CELERY_FLOWER_USER!!!", value=value
+    )
     return celery_flower_user
 
 
@@ -365,14 +376,22 @@ def set_flags_in_envs(postgres_user, celery_flower_user, debug=False):
     set_django_admin_url(production_django_envs_path)
 
     set_postgres_user(local_postgres_envs_path, value=postgres_user)
-    set_postgres_password(local_postgres_envs_path, value=DEBUG_VALUE if debug else None)
+    set_postgres_password(
+        local_postgres_envs_path, value=DEBUG_VALUE if debug else None
+    )
     set_postgres_user(production_postgres_envs_path, value=postgres_user)
-    set_postgres_password(production_postgres_envs_path, value=DEBUG_VALUE if debug else None)
+    set_postgres_password(
+        production_postgres_envs_path, value=DEBUG_VALUE if debug else None
+    )
 
     set_celery_flower_user(local_django_envs_path, value=celery_flower_user)
-    set_celery_flower_password(local_django_envs_path, value=DEBUG_VALUE if debug else None)
+    set_celery_flower_password(
+        local_django_envs_path, value=DEBUG_VALUE if debug else None
+    )
     set_celery_flower_user(production_django_envs_path, value=celery_flower_user)
-    set_celery_flower_password(production_django_envs_path, value=DEBUG_VALUE if debug else None)
+    set_celery_flower_password(
+        production_django_envs_path, value=DEBUG_VALUE if debug else None
+    )
 
 
 def set_flags_in_settings_files():
@@ -405,7 +424,32 @@ def remove_drf_starter_files():
     shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "tests", "api"))
 
 
+def remove_template_base_file():
+    templates_path = Path("{{ cookiecutter.project_slug }}", "templates")
+    if "{{ cookiecutter.use_djangocms }}".lower() == "y":
+        file_to_remove = templates_path / "base.html"
+        folder_to_remove = templates_path / "pages"
+        if folder_to_remove.exists() and folder_to_remove.is_dir():
+            shutil.rmtree(folder_to_remove)
+            print(INFO + f"Removed folder: {folder_to_remove}" + TERMINATOR)
+    else:
+        file_to_remove = templates_path / "cms_base.html"
+
+    if file_to_remove.exists():
+        file_to_remove.unlink()
+        print(INFO + f"Removed template: {file_to_remove}" + TERMINATOR)
+
+
+def rename_template_file():
+    templates_path = Path("{{ cookiecutter.project_slug }}", "templates")
+    file = templates_path / "cms_base.html-tpl"
+    if file.exists():
+        file.rename(templates_path / "cms_base.html")
+
+
 def main():
+    rename_template_file()
+
     debug = "{{ cookiecutter.debug }}".lower() == "y"
 
     set_flags_in_envs(
@@ -433,13 +477,19 @@ def main():
     else:
         remove_docker_files()
 
-    if "{{ cookiecutter.use_docker }}".lower() == "y" and "{{ cookiecutter.cloud_provider}}" != "AWS":
+    if (
+        "{{ cookiecutter.use_docker }}".lower() == "y"
+        and "{{ cookiecutter.cloud_provider}}" != "AWS"
+    ):
         remove_aws_dockerfile()
 
     if "{{ cookiecutter.use_heroku }}".lower() == "n":
         remove_heroku_files()
 
-    if "{{ cookiecutter.use_docker }}".lower() == "n" and "{{ cookiecutter.use_heroku }}".lower() == "n":
+    if (
+        "{{ cookiecutter.use_docker }}".lower() == "n"
+        and "{{ cookiecutter.use_heroku }}".lower() == "n"
+    ):
         if "{{ cookiecutter.keep_local_envs_in_vcs }}".lower() == "y":
             print(
                 INFO + ".env(s) are only utilized when Docker Compose and/or "
@@ -468,7 +518,10 @@ def main():
             use_async=("{{ cookiecutter.use_async }}".lower() == "y"),
         )
 
-    if "{{ cookiecutter.cloud_provider }}" == "None" and "{{ cookiecutter.use_docker }}".lower() == "n":
+    if (
+        "{{ cookiecutter.cloud_provider }}" == "None"
+        and "{{ cookiecutter.use_docker }}".lower() == "n"
+    ):
         print(
             WARNING + "You chose to not use any cloud providers nor Docker, "
             "media files won't be served in production." + TERMINATOR
@@ -496,6 +549,8 @@ def main():
 
     if "{{ cookiecutter.use_async }}".lower() == "n":
         remove_async_files()
+
+    remove_template_base_file()
 
     print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
 

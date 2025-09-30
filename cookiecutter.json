@@ -33,6 +33,8 @@
   ],
   "use_async": "n",
   "use_drf": "n",
+  "use_djangocms": "n",
+  "use_djangoFiler": "n",
   "frontend_pipeline": ["None", "Django Compressor", "Gulp", "Webpack"],
   "use_celery": "n",
   "use_mailpit": "n",
