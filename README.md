@@ -1,4 +1,4 @@
-# Cookiecutter Django
+# DjangoCMS Cookiecutter and Django
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/cookiecutter/cookiecutter-django/ci.yml?branch=master)](https://github.com/cookiecutter/cookiecutter-django/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Documentation Status](https://readthedocs.org/projects/cookiecutter-django/badge/?version=latest)](https://cookiecutter-django.readthedocs.io/en/latest/?badge=latest)
@@ -19,9 +19,9 @@ production-ready Django projects quickly.
 
 ## Features
 
-- For Django 5.1
+- For Django 5.1 && DjangoCMS 5.0.1
 - Works with Python 3.12
-- Renders Django projects with 100% starting test coverage
+- Renders DjangoCMS projects with 100% starting test coverage
 - Twitter [Bootstrap](https://github.com/twbs/bootstrap) v5
 - [12-Factor](https://12factor.net) based settings via [django-environ](https://github.com/joke2k/django-environ)
 - Secure by default. We believe in SSL.
@@ -67,9 +67,6 @@ Projects that provide financial support to the maintainers:
 
 ### Two Scoops of Django
 
-[![Cover of the book "Two Scoops of Django 3.x"](https://f004.backblazeb2.com/file/feldroycom/images/book-TSD3-800.jpg)](https://www.feldroy.com/two-scoops-press#two-scoops-of-django)
-
-Two Scoops of Django 3.x is the best ice cream-themed Django reference in the universe!
 
 ### PyUp
 
@@ -153,6 +150,8 @@ Answer the prompts with your own desired [options](http://cookiecutter-django.re
     Choose from 1, 2, 3, 4, 5, 6, 7, 8, 9 [1]: 1
     use_async [n]: n
     use_drf [n]: y
+    use_djangocms [n]: y
+    use_djangofiler [n]: y
     Select frontend_pipeline:
     1 - None
     2 - Django Compressor

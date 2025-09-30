@@ -2,6 +2,9 @@
 All enhancements and patches to Cookiecutter Django will be documented in this file.
 
 <!-- GENERATOR_PLACEHOLDER -->
+## 2025.09.30
+
+- add options for DjangoCMS and django-filer
 
 ## 2025.08.01
 
